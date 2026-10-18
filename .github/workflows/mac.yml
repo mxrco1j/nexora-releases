@@ -1,0 +1,53 @@
+# macOS build of the Nexora launcher (installed as .github/workflows/mac.yml in the release repository by
+# scripts/setup-mac-build.js). scripts/release.js attaches the launcher source and the mod jars to every
+# release; publishing it starts this build, which adds the .dmg/.zip files and removes those inputs again.
+name: macOS build
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag, e.g. v0.1.20
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  mac:
+    runs-on: macos-14
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Download the launcher source and mod builds of this release
+        run: |
+          mkdir -p work/launcher work/mod/build/libs-mv
+          cd work
+          gh release download "$TAG" -R "$GITHUB_REPOSITORY" -p build-launcher-src.zip -p build-mods.zip
+          unzip -q build-launcher-src.zip -d launcher
+          unzip -q build-mods.zip -d mod/build/libs-mv
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build (Apple Silicon and Intel)
+        working-directory: work/launcher
+        # no Apple developer certificate: package.json signs ad hoc (identity "-"), which Apple Silicon requires
+        run: |
+          npm ci
+          npx electron-builder --mac dmg zip --arm64 --x64 --publish never \
+            -c.publish.provider=github -c.publish.owner="${GITHUB_REPOSITORY_OWNER}" -c.publish.repo="${GITHUB_REPOSITORY#*/}"
+
+      - name: Add the macOS files to the release
+        working-directory: work/launcher/dist
+        run: gh release upload "$TAG" -R "$GITHUB_REPOSITORY" --clobber *.dmg *.zip latest-mac.yml
+
+      # only after a successful build: a failed run can simply be started again
+      - name: Remove the build inputs from the release
+        run: |
+          gh release delete-asset "$TAG" build-launcher-src.zip -R "$GITHUB_REPOSITORY" -y
+          gh release delete-asset "$TAG" build-mods.zip -R "$GITHUB_REPOSITORY" -y
