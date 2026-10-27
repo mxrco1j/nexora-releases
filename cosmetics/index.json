@@ -14,6 +14,11 @@
 			"gap": 0.9,
 			"lag": 0,
 			"particles": 0,
+			"effects": [
+				"end_rod",
+				"white_ash",
+				"white_ash"
+			],
 			"variants": [
 				{
 					"key": "white",
@@ -54,7 +59,7 @@
 				".......................",
 				"......................."
 			],
-			"hash": "8f39a016c6891d5a"
+			"hash": "753a396b0a30ee09"
 		},
 		{
 			"id": "cotton_candy",
@@ -70,6 +75,11 @@
 			"gap": 0.9,
 			"lag": 0,
 			"particles": 3,
+			"effects": [
+				"cherry_leaves",
+				"cherry_leaves",
+				"end_rod"
+			],
 			"upper": [
 				"..#####.....",
 				".########...",
@@ -128,7 +138,7 @@
 				"............",
 				"............"
 			],
-			"hash": "f338a777366395a3"
+			"hash": "beba2cf891099bea"
 		}
 	],
 	"capes": [
