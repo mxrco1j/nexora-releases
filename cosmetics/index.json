@@ -185,6 +185,17 @@
 			"pixel": false,
 			"edge": "#030b07",
 			"hash": "438b9f1cd4f0b6a5"
+		},
+		{
+			"id": "frost_ring",
+			"name": "Frost Ring",
+			"collection": "nexora",
+			"rarity": "epic",
+			"frames": 1,
+			"fps": 1,
+			"pixel": true,
+			"edge": "#202a42",
+			"hash": "90af40e5ac78693d"
 		}
 	]
 }
